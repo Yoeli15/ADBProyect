@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin#mezcla de permisos
-from sucursal.models import SucursalModel
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -29,18 +28,38 @@ class UserManager(BaseUserManager):
         user.is_active = True
         user.is_superuser=True
         user.is_staff = True
-        user.is_verified = True
         user.email = email
         user.set_password(password)
         user.save()
         return user
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
-    sucursal_id = models.ForeignKey(SucursalModel, on_delete = models.CASCADE)
-    name = models.CharField(max_length=50)
+
+    HORARIO =[
+        ('MATUTINO', 'matutino'),
+        ('VESPERTINO', 'vespertino')
+    ]
+
+    SUCURSALES =[
+        ('INSURGENTES', 'insurgentes'),
+        ('CUATRO CAMINOS', 'cuatro caminos'),
+        ('LOMAS ESTRELLA', 'lomas estrella'),
+        ('SANTA FE', 'santa fe'),
+        ('UNIVERSIDAD', 'universidad')
+    ]
+
     email = models.EmailField(max_length=50, unique = True)
     password = models.CharField(max_length=255)
+    rfc = models.CharField(max_length=13, unique=True, blank=True, null=True)
+    name = models.CharField(max_length=20)
+    fathersLastName = models.CharField(max_length=20)
+    mothersLastName = models.CharField(max_length=20)
+    age = models.IntegerField()
+    schedule = models.CharField(choices=HORARIO, blank=True, null=True)
+    typeUser = models.CharField(max_length=10, default='CLIENTE')
+    branch = models.CharField(choices=SUCURSALES, blank=True, null=True)
     attempt = models.IntegerField(default=0)
+    made_by = models.CharField(max_length=20, blank=True, null=True)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -57,12 +76,3 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'users'
-
-class Client(models.Model):
-    user_id = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    tarj_id = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    last_name_pat = models.CharField(max_length=50)
-    last_name_mat = models.CharField(max_length=50)
-    address = models.CharField(max_length=50)
-    age = models.IntegerField()
-    num_tarj= models.IntegerField()
