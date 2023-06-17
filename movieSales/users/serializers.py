@@ -191,7 +191,13 @@ class EmployeeSignupSerializer(serializers.ModelSerializer):
         if age < 18:
             raise ValidationError('Sólo se permite el registro de empleados mayores de edad.')
 
-        return super(ClientSignupSerializer, self).validate(data)
+        sucursal = data.get('branch')
+        turno = data.get("schedule")
+
+        if (sucursal and turno) is None:
+            raise ValidationError('Coloca la sucursal y el horario de tu empleado')
+
+        return super(EmployeeSignupSerializer, self).validate(data)
 
     def create(self, validated_data):
         user = UserModel.objects.create_user(**validated_data)
@@ -267,7 +273,7 @@ class ClientSerializer(serializers.ModelSerializer):
         if age < 18:
             raise ValidationError('La plataforma sólo está disponible para mayores de edad.')
 
-        return super(ClientSignupSerializer, self).validate(data)
+        return super(ClientSerializer, self).validate(data)
 
 #Para cuando se edita un empleado
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -333,10 +339,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
         if age < 18:
             raise ValidationError('Sólo se permite el registro de empleados mayores de edad.')
 
-        return super(ClientSignupSerializer, self).validate(data)
+        return super(EmployeeSerializer, self).validate(data)
 
     
-#Para camvbiar contraseña
+#Para cambiar contraseña
 class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel

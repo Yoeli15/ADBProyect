@@ -54,7 +54,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=20)
     fathersLastName = models.CharField(max_length=20)
     mothersLastName = models.CharField(max_length=20)
-    age = models.IntegerField()
+    age = models.IntegerField(default=18)
     schedule = models.CharField(choices=HORARIO, blank=True, null=True)
     typeUser = models.CharField(max_length=10, default='CLIENTE')
     branch = models.CharField(choices=SUCURSALES, blank=True, null=True)

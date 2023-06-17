@@ -70,7 +70,7 @@ class UserListView(APIView):
                 for b in usuario:
                     sucursal = b.branch
                 
-                users = UserModel.objects.filter(branch = sucursal, status_delete = False).order_by("branch")
+                users = UserModel.objects.filter(branch = sucursal, is_superuser = False, status_delete = False).order_by("branch")
         serializer = EmployeeSignupSerializer(users, many=True)
         return Response(serializer.data, status = status.HTTP_200_OK)
 
@@ -130,12 +130,12 @@ class UserLoginView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 class ConfigureUserView(APIView):
-    permission_classes = (permissions.IsAuthenticate,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def put(self, request):
         correo = request.GET.get('email')#obtener el email
 
-        if UserModel.objects.filter(email = self.request.user, is_superuser = False, status_delete = False).exists():
+        if UserModel.objects.filter(email = self.request.user, is_superuser = False, typeUser = 'CLIENTE', status_delete = False).exists():
             user_obj = get_object_or_404(UserModel.objects.filter(status_delete = False), email = self.request.user)
             serializer = ClientSerializer(instance=user_obj, data=request.data, partial = True)
             serializer.is_valid(raise_exception=True)
@@ -144,50 +144,42 @@ class ConfigureUserView(APIView):
             if UserModel.objects.filter(email = self.request.user, is_staff = True, status_delete = False).exists():
                 user_obj = get_object_or_404(UserModel.objects.filter(status_delete = False), email = correo)
                 if user_obj.is_staff:
-                    data = {'You can\'t update yourself'}
+                    data = {'You can\'t update yourself here'}
                     return Response(data, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    serializer = EmployeeSerializer(instance=user_obj, data=request.data, partial = True)
-                    serializer.is_valid(raise_exception=True)
-                    serializer.save()
             else:
                 usuario = UserModel.objects.filter(email = self.request.user, status_delete = False)
                 for b in usuario:
                     sucursal = b.branch
                 user_obj = get_object_or_404(UserModel.objects.filter(branch = sucursal, status_delete = False), email = correo)
 
-                serializer = EmployeeSerializer(instance=user_obj, data=request.data, partial = True)
-                serializer.is_valid(raise_exception=True)
-                serializer.save()
+            serializer = EmployeeSerializer(instance=user_obj, data=request.data, partial = True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def delete(self, request):
         correo = request.GET.get('email')#obtener el email
-        if UserModel.objects.filter(email = self.request.user, is_superuser = False, status_delete = False).exists():
+        if UserModel.objects.filter(email = self.request.user, is_superuser = False, typeUser = 'CLIENTE', status_delete = False).exists():
             user_obj = get_object_or_404(UserModel.objects.filter(status_delete = False), email = self.request.user)
-            user_obj.status_delete = True
-            user_obj.save()
         else:
             if UserModel.objects.filter(email = self.request.user, is_staff = True, status_delete = False).exists():
                 user_obj = get_object_or_404(UserModel.objects.filter(status_delete = False), email = correo)
                 if user_obj.is_staff:
                     data = {'You can\'t erase yourself'}
                     return Response(data, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    user_obj.status_delete = True
-                    user_obj.save()
             else:
                 usuario = UserModel.objects.filter(email = self.request.user, status_delete = False)
                 for b in usuario:
                     sucursal = b.branch
                 user_obj = get_object_or_404(UserModel.objects.filter(branch = sucursal, status_delete = False), email = correo)
-                user_obj.status_delete = True
-                user_obj.save()
+
+        user_obj.status_delete = True
+        user_obj.save()
 
         return Response({'message':'Usuario Eliminado.'}, status = status.HTTP_204_NO_CONTENT)
     
 class ChangePasswordView(APIView):
-    permission_classes = (permissions.IsAuthenticate,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def put(self, request):
         correo = request.GET.get('email')#obtener el email
