@@ -59,6 +59,8 @@ INSTALLED_APPS += [
     # Local apps:
     'users',
     'address',
+    'movies',
+    'stores'
 ]
 
 MIDDLEWARE = [
