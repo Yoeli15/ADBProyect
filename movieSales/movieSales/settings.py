@@ -60,7 +60,8 @@ INSTALLED_APPS += [
     'users',
     'address',
     'movies',
-    'stores'
+    'stores',
+    'cards'
 ]
 
 MIDDLEWARE = [
