@@ -11,7 +11,7 @@ class MovieRegisterSerializer(serializers.ModelSerializer):
         # get the name from the data
         name = attrs.get('name')
 
-        if len(name) == 1:
+        if len(name) <= 1:
             ValidationError("El nombre de la película debe contener más de 1 caracter.")
         
         # get the genre from the data

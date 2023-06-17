@@ -4,7 +4,7 @@ from django.db import models
 class MovieModel(models.Model):
     name = models.CharField(max_length=30)
     genre = models.CharField(max_length=20)
-    classification = models.CharField(max_length=2)
+    classification = models.CharField(max_length=10)
     release_year = models.IntegerField()
     movies_available = models.IntegerField()
     languages = models.CharField(max_length=15)

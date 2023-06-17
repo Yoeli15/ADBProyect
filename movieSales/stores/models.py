@@ -15,7 +15,7 @@ class StoreModel(models.Model):
     user_id = models.ManyToManyField(UserModel)
     movies_id = models.ManyToManyField(MovieModel)
     name = models.CharField(choices=SUCURSALES, unique=True)
-    location = models.CharField(max_length=50, unique=True)
+    location = models.CharField(max_length=100, unique=True)
     store_hours = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)#auto_now_add se genera cuando se invoca, auto_now cuando se crea
     updated_at = models.DateTimeField(auto_now=True)
