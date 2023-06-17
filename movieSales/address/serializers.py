@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AddressModel
+from address.models import AddressModel
 from django.core.exceptions import ValidationError
 
 class AddressRegisterSerializer(serializers.ModelSerializer):
